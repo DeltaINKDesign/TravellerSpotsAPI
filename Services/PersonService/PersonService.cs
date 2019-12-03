@@ -38,10 +38,11 @@ namespace TravellerSpot.Services
             return persons;
         }
 
-        public List<Person> GetPersonsWithNickLike()
+        public List<Person> WhoIsFollowedBy(string nick)
         {
             List<Person> persons = new List<Person>();
             var statement = "MATCH (p:person) WHERE ee.name";
+
             return null;
         }
 

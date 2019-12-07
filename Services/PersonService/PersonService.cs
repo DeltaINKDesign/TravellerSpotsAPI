@@ -3,45 +3,66 @@ using TravellerSpot.Models;
 using Microsoft.AspNetCore.Mvc;
 using TravellerSpot.Contexts;
 using Neo4j.Driver.V1;
+using System.Linq;
+using StackExchange.Redis;
 
 namespace TravellerSpot.Services
 {
     public class PersonService
     {
         private readonly DatabaseContext _database;
+        private readonly RedisService _redisService;
 
-        public PersonService(DatabaseContext database)
+        public PersonService(DatabaseContext database, RedisService redisService)
         {
             _database = database;
+            _redisService = redisService;
         }
 
-        public ActionResult Create(Person p)
+        public ActionResult<Person> Create(Person p)       //pozwala na dodawanie duplikatow
         {
-            //var statement =
+            // utworzenie węzła z referencją do redisa
+            string statement = "CREATE (p: Person {nick: '"+p.Nick+"'})";
+            using (var s = _database.Driver.Session())
+            {
+                s.WriteTransaction(tx =>
+                {
+                    var txresult = tx.Run(statement);
+                });
+            }
 
+            HashEntry[] redisPersonHash =
+            {
+                new HashEntry("Name",p.Name),
+                new HashEntry("From", p.From),
+                new HashEntry("Age",p.Age)
+            };
 
-                return null;
+            _redisService.RedisConnection.GetDatabase().HashSet("Person:" + p.Nick,redisPersonHash);
+            return p ;  //zmienic zwrot
         }
 
-        public List<Person> GetAll()
+        public ActionResult<List<Person>> GetAll()
         {
             List<Person> persons = new List<Person>();
             var statement = "MATCH (p:Person) return p";
-            using (var session = _database.Driver.Session())   // obczaic co jest 5 z tymi usingami
+            using (var session = _database.Driver.Session())   
             {
                 using var tx = session.BeginTransaction();
                 IStatementResult results = tx.Run(statement);
                 foreach (IRecord result in results)
                 {
                     var node = result["p"].As<INode>();
+                    var redisData =_redisService.RedisConnection.GetDatabase().HashGetAll("Person:"+node.Properties["nick"].As<string>());
                     persons.Add(
                         new Person
                         {
                             Nick = node.Properties["nick"].As<string>(),
-                            Name = node.Properties["name"].As<string>(),
-                            Age = node.Properties["age"].As<int>(),
-                            From = node.Properties["from"].As<string>(),
+                            Name = redisData.FirstOrDefault(x => x.Name == "Name").Value,
+                            From = redisData.FirstOrDefault(x => x.Name == "From").Value,
+                            Age = (int) redisData.FirstOrDefault(x => x.Name == "Age").Value,
                         });
+                    ;
                 }
             }
             return persons;

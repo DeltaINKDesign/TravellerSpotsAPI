@@ -8,7 +8,6 @@ namespace TravellerSpot.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    
     public class PersonController : ControllerBase
     {
         private readonly PersonService _personService;
@@ -19,13 +18,13 @@ namespace TravellerSpot.Controllers
         }
 
         // Creates a person 
-        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Person> Create(Person p) => _personService.Create(p);
+        [HttpPost]
+        [Route("AddPerson")]
+        public ActionResult<Person> Create([FromQuery]Person p) => _personService.Create(p);
 
-
-
+        [HttpGet]
         // Get ALL data about persons in database
         public ActionResult<List<Person>> Get() => _personService.GetAll();
 
@@ -40,6 +39,6 @@ namespace TravellerSpot.Controllers
 
         //// Create person in Database
         //public IActionResult PostNewPerson(Person p) => _personService.PostNewPerson();
-            
+
     }
 }

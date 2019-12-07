@@ -8,7 +8,7 @@ namespace TravellerSpot.Services
     {
         private readonly string _redisHost;
         private readonly int _redisPort;
-        private ConnectionMultiplexer _redis;
+        private ConnectionMultiplexer _redisConnection;
 
 
         public RedisService(IConfiguration config)
@@ -16,12 +16,15 @@ namespace TravellerSpot.Services
             _redisHost = config["Redis:Host"];
             _redisPort = Convert.ToInt32(config["Redis:Port"]);
         }
+
+        public ConnectionMultiplexer RedisConnection { get => _redisConnection; }
+
         public void Connect()
         {
             try
             {
                 var configString = $"{_redisHost}:{_redisPort},connectRetry=5";
-                _redis = ConnectionMultiplexer.Connect(configString);
+                _redisConnection = ConnectionMultiplexer.Connect(configString);
             }
             catch (RedisConnectionException err)
             {

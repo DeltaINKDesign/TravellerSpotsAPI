@@ -19,6 +19,7 @@ namespace TravellerSpot
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,10 +36,11 @@ namespace TravellerSpot
             services.AddControllers();
             services.AddSingleton<DatabaseContext>();
             services.AddSingleton<PersonService>();
+            services.AddSingleton<RedisService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,RedisService redisService)
         {
             if (env.IsDevelopment())
             {
@@ -55,6 +57,7 @@ namespace TravellerSpot
             {
                 endpoints.MapControllers();
             });
+            redisService.Connect();
         }
     }
 }

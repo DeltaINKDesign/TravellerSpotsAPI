@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using TravellerSpot.Model;
+using TravellerSpot.Models;
+using Microsoft.AspNetCore.Mvc;
 using TravellerSpot.Contexts;
 using Neo4j.Driver.V1;
 
@@ -12,6 +13,14 @@ namespace TravellerSpot.Services
         public PersonService(DatabaseContext database)
         {
             _database = database;
+        }
+
+        public ActionResult Create(Person p)
+        {
+            //var statement =
+
+
+                return null;
         }
 
         public List<Person> GetAll()

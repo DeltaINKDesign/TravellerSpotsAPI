@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using TravellerSpot.Services;
-using TravellerSpot.Model;
+using TravellerSpot.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace TravellerSpot.Controllers
 {
@@ -17,14 +18,28 @@ namespace TravellerSpot.Controllers
             _personService = personService;
         }
 
-        // MAIN: get ALL data about persons in database
+        // Creates a person 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person> Create(Person p) => _personService.Create(p);
 
+
+
+        // Get ALL data about persons in database
         public ActionResult<List<Person>> Get() => _personService.GetAll();
 
-        // SEARCH: get a person with nick alike...
+        // Get all countries in which the person queried was
+        //public ActionResult<List<Country>> GetVisitedCountries() => _personService.GetVisitedCountries();
 
-        //public ActionResult<List<Person>> GetPersonsWithNickLike() => _personService.GetPersonsWithNickLike();
+        //// Get people who follow queried person
+        //public ActionResult<List<Person>> GetFollowedPeopleBy() => _personService.GetFollowedPeopleBy();
 
+        //// Get average stars number based on persons all travels
+        //public ActionResult<List<Person>> GetAveragePersonTravelsRating() => _personService.GetAveragePersonTravelsRating();
 
+        //// Create person in Database
+        //public IActionResult PostNewPerson(Person p) => _personService.PostNewPerson();
+            
     }
 }

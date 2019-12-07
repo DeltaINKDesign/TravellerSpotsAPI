@@ -1,4 +1,4 @@
-﻿namespace TravellerSpot.Model
+﻿namespace TravellerSpot.Models
 {
     public class Person
     {

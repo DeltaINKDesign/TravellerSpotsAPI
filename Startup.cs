@@ -36,6 +36,7 @@ namespace TravellerSpot
             services.AddControllers();
             services.AddSingleton<DatabaseContext>();
             services.AddSingleton<PersonService>();
+            services.AddSingleton<TripService>();
             services.AddSingleton<RedisService>();
         }
 

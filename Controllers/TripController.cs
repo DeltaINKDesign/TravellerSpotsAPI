@@ -35,5 +35,7 @@ namespace TravellerSpot.Controllers
         [Route("GetTripsInProgress")]
         public ActionResult<List<Trip>> GetTripsInProgress([FromHeader] string p) => Ok(_tripService.GetTripsInProgress(p));
 
+
+
     }
 }

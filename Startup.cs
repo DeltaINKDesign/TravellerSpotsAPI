@@ -38,6 +38,7 @@ namespace TravellerSpot
             services.AddSingleton<DatabaseContext>();
             services.AddSingleton<PersonService>();
             services.AddSingleton<TripService>();
+            services.AddSingleton<SpotService>();
             services.AddSingleton<RedisService>();
         }
 

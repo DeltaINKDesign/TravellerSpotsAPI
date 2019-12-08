@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using TravellerSpot.Configuration.Neo4jDatabaseSettings;
 using TravellerSpot.Contexts;
 using TravellerSpot.Services;
+using TravellerSpot.QueryHelper;
 
 namespace TravellerSpot
 {

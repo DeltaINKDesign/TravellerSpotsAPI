@@ -8,6 +8,6 @@ namespace TravellerSpot.Models
     public class Trip
     {
         public string Name { get; set; }
-        public string Stars { get; set; }
+        public int Stars { get; set; }
     }
 }

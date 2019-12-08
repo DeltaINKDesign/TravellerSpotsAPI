@@ -5,6 +5,7 @@ using TravellerSpot.Contexts;
 using Neo4j.Driver.V1;
 using System.Linq;
 using StackExchange.Redis;
+using TravellerSpot.QueryHelper;
 
 namespace TravellerSpot.Services
 {
@@ -21,25 +22,39 @@ namespace TravellerSpot.Services
 
         public ActionResult<Person> Create(Person p)       //pozwala na dodawanie duplikatow
         {
-            // utworzenie węzła z referencją do redisa
-            string statement = "CREATE (p: Person {nick: '"+p.Nick+"'})";
+            string createQuery = QueryHelper<Person>.CreateTemplateReturner(p,"Nick",p.Nick);
+            string matchQuery = QueryHelper<Person>.MatchTemplateReturner(p,"Nick",p.Nick);
+
             using (var s = _database.Driver.Session())
             {
-                s.WriteTransaction(tx =>
+                bool dupFound = true;
+                s.ReadTransaction(tx =>
                 {
-                    var txresult = tx.Run(statement);
+                    var res = tx.Run(matchQuery);
+                    if (res.Peek() == null)  //jesli nie ma duplikatu
+                    {
+                        dupFound = false; //brak dup
+                    }
                 });
+                if (dupFound) p.Nick = "DUPLIKAT";
+                if(!dupFound)
+                {       //tworzymy jesli nie ma duplikatu
+                    s.WriteTransaction(tx =>
+                    {
+                        var txresult = tx.Run(createQuery);
+                    });
+                    HashEntry[] p1 = {
+                        new HashEntry("Name", p.Name),
+                        new HashEntry("From", p.From),
+                        new HashEntry("Age", p.Age)
+                    };
+                    HashEntry[] redisPersonHash = p1;
+                    _redisService.RedisConnection.GetDatabase().HashSet("Person:" + p.Nick, redisPersonHash);
+                }
+
             }
 
-            HashEntry[] redisPersonHash =
-            {
-                new HashEntry("Name",p.Name),
-                new HashEntry("From", p.From),
-                new HashEntry("Age",p.Age)
-            };
-
-            _redisService.RedisConnection.GetDatabase().HashSet("Person:" + p.Nick,redisPersonHash);
-            return p ;  //zmienic zwrot
+           return p ;  //zmienic zwrot
         }
 
         public ActionResult<List<Person>> GetAll()

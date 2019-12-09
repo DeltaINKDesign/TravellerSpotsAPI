@@ -22,11 +22,15 @@ namespace TravellerSpot.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("AddPerson")]
-        public ActionResult<Person> Create([FromQuery]Person p) => _personService.Create(p);
+        public ActionResult<string> Create([FromQuery]Person p) => _personService.Create(p);
 
         [HttpGet]
         // Get ALL data about persons in database
         public ActionResult<List<Person>> Get() => _personService.GetAll();
+
+        [HttpPost]
+        [Route("FollowPerson")]
+        public ActionResult<string> FollowPerson([FromHeader] string personName,string followedName) => _personService.FollowPerson(personName,followedName);
 
         // Get all countries in which the person queried was
         //public ActionResult<List<Country>> GetVisitedCountries() => _personService.GetVisitedCountries();

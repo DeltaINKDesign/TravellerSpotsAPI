@@ -24,7 +24,7 @@ namespace TravellerSpot.Services
         public ActionResult<Spot> PostSpotToTrip(Spot spot,string personName,string tripName)       //pozwala na dodawanie duplikatow
         {
 
-            string createQuery = $"MATCH(trip: Trip {{Name: '{tripName}'}}) CREATE(spot: Spot {{ Name: '{spot.Name}'}}), (trip)-[:INCLUDE]->(spot)";
+            string createQuery = $"MATCH(trip: Trip {{name: '{tripName}'}}) CREATE(spot: Spot {{ name: '{spot.Name}'}}), (trip)-[:INCLUDE]->(spot)";
             string duplicateCheckQuery = $"MATCH(spot: Spot {{ name: '{spot.Name}'}}) return spot";
 
             using (var s = _database.Driver.Session())
@@ -46,10 +46,12 @@ namespace TravellerSpot.Services
                         var txresult = tx.Run(createQuery);
                     });
                     HashEntry[] p1 = {
-                        new HashEntry("SeeingCost", spot.SeeingCost),
-                        new HashEntry("Stars", spot.Stars)
+                        new HashEntry("seeingCost", spot.SeeingCost),
+                        new HashEntry("stars", spot.Stars)
                     };
-                    _redisService.RedisConnection.GetDatabase().HashSet($"Travel:{tripName}:Spot:{spot.Name}:Hash", p1);
+                    _redisService.RedisConnection.GetDatabase().ListRemove($"trips:{personName}:triplist:temporary", tripName, -1);
+
+                    _redisService.RedisConnection.GetDatabase().HashSet($"spots:{spot.Name}", p1);
                 }
 
             }

@@ -25,7 +25,7 @@ namespace TravellerSpot.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("CreateEmpty")]
-        public ActionResult<Trip> CreateEmpty([FromQuery]Trip t,[FromHeader] string p) => Ok(_tripService.CreateEmpty(t,p));
+        public ActionResult<string> CreateEmpty([FromQuery]Trip t, string personName) => Ok(_tripService.CreateEmpty(t, personName));
 
 
         // Creates a trip 
@@ -33,7 +33,7 @@ namespace TravellerSpot.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         [Route("GetTripsInProgress")]
-        public ActionResult<List<Trip>> GetTripsInProgress([FromHeader] string p) => Ok(_tripService.GetTripsInProgress(p));
+        public ActionResult<List<Trip>> GetTripsInProgress([FromQuery] string personName) => Ok(_tripService.GetTripsInProgress(personName));
 
 
 

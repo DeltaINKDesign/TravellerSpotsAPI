@@ -20,6 +20,6 @@ namespace TravellerSpot.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("PostSpotToTravel")]
-        public ActionResult<Spot> PostSpotToTrip([FromQuery]Spot spot, [FromHeader] string personName,[FromHeader] string tripName) => Ok(_spotService.PostSpotToTrip(spot,personName,tripName));
+        public ActionResult<string> PostSpotToTrip([FromQuery]Spot spot, string personName, string tripName) => Ok(_spotService.PostSpotToTrip(spot,personName,tripName));
     }
 }

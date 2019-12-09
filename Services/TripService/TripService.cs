@@ -18,10 +18,10 @@ namespace TravellerSpot.Services
             _redisService = redisService;
         }
 
-        public ActionResult<Trip> CreateEmpty(Trip t, string p)       //pozwala na dodawanie duplikatow
+        public ActionResult<string> CreateEmpty(Trip t, string personName)       //pozwala na dodawanie duplikatow
         {
-            var createTripQuery = $"MATCH (os: Person {{Nick: '{p}'}}) CREATE (co: Trip {{Name: '{t.Name}'}}), (os)-[:CREATED]->(co)";
-            var existingNodeStatement = "MATCH (v: Trip {Name: '" + t.Name + "'}) return v";
+            var createTripQuery = $"MATCH (os: Person {{name: '{personName}'}}) CREATE (co: Trip {{name: '{t.Name}', stars: '{t.Stars}'}}), (os)-[:CREATED]->(co)";
+            var existingNodeStatement = "MATCH (v: Trip {name: '" + t.Name + "'}) return v";
 
             using (var s = _database.Driver.Session())
             {
@@ -46,17 +46,16 @@ namespace TravellerSpot.Services
                         var txresult = tx.Run(createTripQuery);
                     });
 
-                    _redisService.RedisConnection.GetDatabase().ListLeftPush($"Trips:{p}:Triplist",t.Name);
-                    _redisService.RedisConnection.GetDatabase().StringSet("Trips:" + t.Name + ":Stars", t.Stars);
+                    _redisService.RedisConnection.GetDatabase().ListLeftPush($"trips:{personName}:triplist:temporary",t.Name);
                 }
             }
 
-            return t;  //zmienic zwrot
+            return $"Wycieczka {t.Name} została utworzona oraz powiązana z użytkownikiem {personName}";
         }
 
         public ActionResult<List<Trip>> GetTripsInProgress(string p)
         {
-            var data = _redisService.RedisConnection.GetDatabase().ListRange($"Trips:{p}:Triplist", 0, -1);
+            var data = _redisService.RedisConnection.GetDatabase().ListRange($"trips:{p}:triplist:temporary", 0, -1);
             List<Trip> wycieczkiTemp = new List<Trip>();
             foreach(string d in data)
             {

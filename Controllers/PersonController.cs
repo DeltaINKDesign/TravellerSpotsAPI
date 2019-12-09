@@ -30,7 +30,7 @@ namespace TravellerSpot.Controllers
 
         [HttpPost]
         [Route("FollowPerson")]
-        public ActionResult<string> FollowPerson([FromHeader] string personName,string followedName) => _personService.FollowPerson(personName,followedName);
+        public ActionResult<string> FollowPerson([FromQuery] string personName,string followedName) => _personService.FollowPerson(personName,followedName);
 
         // Get all countries in which the person queried was
         //public ActionResult<List<Country>> GetVisitedCountries() => _personService.GetVisitedCountries();

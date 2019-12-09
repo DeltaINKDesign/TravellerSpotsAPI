@@ -46,7 +46,7 @@ namespace TravellerSpot.Services
                         var txresult = tx.Run(createTripQuery);
                     });
 
-                    _redisService.RedisConnection.GetDatabase().ListLeftPush($"trips:{personName}:triplist:temporary",t.Name);
+                    _redisService.RedisConnection.GetDatabase().SetAdd($"trips:{personName}:tripset:temporary",t.Name.ToString());
                 }
             }
 
@@ -55,7 +55,7 @@ namespace TravellerSpot.Services
 
         public ActionResult<List<Trip>> GetTripsInProgress(string p)
         {
-            var data = _redisService.RedisConnection.GetDatabase().ListRange($"trips:{p}:triplist:temporary", 0, -1);
+            var data = _redisService.RedisConnection.GetDatabase().SetMembers($"trips:{p}:tripset:temporary");
             List<Trip> wycieczkiTemp = new List<Trip>();
             foreach(string d in data)
             {

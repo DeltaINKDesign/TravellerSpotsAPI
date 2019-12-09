@@ -49,11 +49,10 @@ namespace TravellerSpot.Services
                         new HashEntry("seeingCost", spot.SeeingCost),
                         new HashEntry("stars", spot.Stars)
                     };
-                    _redisService.RedisConnection.GetDatabase().ListRemove($"trips:{personName}:triplist:temporary", tripName, -1);
+                    _redisService.RedisConnection.GetDatabase().SetRemove($"trips:{personName}:tripset:temporary", tripName);
 
                     _redisService.RedisConnection.GetDatabase().HashSet($"spots:{spot.Name}", p1);
                 }
-
             }
 
             return spot;  //zmienic zwrot

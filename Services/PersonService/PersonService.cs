@@ -82,7 +82,7 @@ namespace TravellerSpot.Services
 
         public string FollowPerson(string personName,string followedName)
         {
-            var statement = $"MATCH (kto:Person {{Name:'{personName}'}}), (kogo:Person {{Name:'{followedName}'}}) CREATE (kto)-[:FOLLOW]->(kogo)";
+            var statement = $"MATCH (kto:Person {{name:'{personName}'}}), (kogo:Person {{name:'{followedName}'}}) CREATE (kto)-[:FOLLOW]->(kogo)";
             using (var session =_database.Driver.Session())
             {
                 session.WriteTransaction(tx =>
@@ -90,7 +90,7 @@ namespace TravellerSpot.Services
                     IStatementResult txresult = tx.Run(statement);
                 });
             }
-            return "Utworzyłem powiązanie";
+            return $"Utworzyłem powiązanie {personName} obserwuje {followedName}";
         }
 
         public List<Person> GetPersonsWithNickLike()

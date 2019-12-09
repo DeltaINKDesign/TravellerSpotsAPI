@@ -29,7 +29,7 @@ namespace TravellerSpot.Services
                 s.ReadTransaction(tx =>
                 {
                     var res = tx.Run(existingNodeStatement);
-                    if(res.Peek() == null)  //jesli nie ma duplikatu
+                    if (res.Peek() == null)  //jesli nie ma duplikatu
                     {
                         dupFound = false; //brak dup
                     }
@@ -46,7 +46,7 @@ namespace TravellerSpot.Services
                         var txresult = tx.Run(createTripQuery);
                     });
 
-                    _redisService.RedisConnection.GetDatabase().SetAdd($"trips:{personName}:tripset:temporary",t.Name.ToString());
+                    _redisService.RedisConnection.GetDatabase().SetAdd($"trips:{personName}:tripset:temporary", t.Name.ToString());
                 }
             }
 
@@ -57,13 +57,58 @@ namespace TravellerSpot.Services
         {
             var data = _redisService.RedisConnection.GetDatabase().SetMembers($"trips:{p}:tripset:temporary");
             List<Trip> wycieczkiTemp = new List<Trip>();
-            foreach(string d in data)
+            foreach (string d in data)
             {
-                wycieczkiTemp.Add(new Trip {Name = d });
+                wycieczkiTemp.Add(new Trip { Name = d });
             }
             return wycieczkiTemp;
         }
 
+        public ActionResult<List<Trip>> GetTripsFromObservedPersons(string personName)
+        {
+            List<Trip> trips = new List<Trip>();
+            string query = $"match (:Person {{name: '{personName}'}})-[:FOLLOW]->(Person)-[:CREATED]->(Trip) return Trip  ";
+            using (var session = _database.Driver.Session())
+            {
+                using var tx = session.BeginTransaction();
+                IStatementResult results = tx.Run(query);
+                foreach (IRecord result in results)
+                {
+                    var node = result["Trip"].As<INode>();
+                    trips.Add(
+                        new Trip
+                        {
+                            Name = node.Properties["name"].As<string>(),
+                            Stars = node.Properties["stars"].As<int>()
+                        });
+                }
+                //}
+                return trips;
+            }
+        }
 
-    }
+        public ActionResult<List<Trip>> GetTripsFrom(string personName, string followedName)
+        {
+            List<Trip> trips = new List<Trip>();
+            string query = $"match (:Person {{name: '{followedName}'}})-[:CREATED]->(Trip) return Trip  ";
+            using (var session = _database.Driver.Session())
+            {
+                using var tx = session.BeginTransaction();
+                IStatementResult results = tx.Run(query);
+                foreach (IRecord result in results)
+                {
+                    var node = result["Trip"].As<INode>();
+                    trips.Add(
+                        new Trip
+                        {
+                            Name = node.Properties["name"].As<string>(),    
+                            Stars = node.Properties["stars"].As<int>()
+                        });
+                }
+                //}
+                return trips;
+            }
+
+        }
+    } 
 }

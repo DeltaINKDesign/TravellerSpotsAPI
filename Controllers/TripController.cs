@@ -35,6 +35,18 @@ namespace TravellerSpot.Controllers
         [Route("GetTripsInProgress")]
         public ActionResult<List<Trip>> GetTripsInProgress([FromQuery] string personName) => Ok(_tripService.GetTripsInProgress(personName));
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        [Route("GetTripsFromObservedPersons")]
+        public ActionResult<List<Trip>> GetTripsFromObservedPersons([FromQuery] string personName) => Ok(_tripService.GetTripsFromObservedPersons(personName));
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        [Route("GetTripsFrom")]
+        public ActionResult<List<Trip>> GetTripsFrom([FromQuery] string personName, string followedName) => Ok(_tripService.GetTripsFrom(personName, followedName));
+
 
 
     }

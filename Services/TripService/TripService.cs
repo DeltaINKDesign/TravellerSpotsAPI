@@ -108,7 +108,20 @@ namespace TravellerSpot.Services
                 //}
                 return trips;
             }
+        }
 
+        public ActionResult<List<Trip>> GetRandomTrips()
+        {
+            List<Trip> trips = new List<Trip>();
+            var redisdata = _redisService.RedisConnection.GetDatabase().SetRandomMembers($"trips:tripset",5);
+            foreach(RedisValue rv in redisdata)
+            {
+                trips.Add(new Trip
+                {
+                    Name = rv.ToString()
+                });
+            }
+            return trips;
         }
     } 
 }

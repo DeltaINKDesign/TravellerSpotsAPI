@@ -9,6 +9,6 @@ namespace TravellerSpot.Models
     {
         public string Name { get; set; }
         public string SeeingCost { get; set; }
-        public string Stars { get; set; }
+        public int Stars { get; set; }
     }
 }

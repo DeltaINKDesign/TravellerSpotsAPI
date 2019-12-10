@@ -47,6 +47,12 @@ namespace TravellerSpot.Controllers
         [Route("GetTripsFrom")]
         public ActionResult<List<Trip>> GetTripsFrom([FromQuery] string personName, string followedName) => Ok(_tripService.GetTripsFrom(personName, followedName));
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        [Route("GetRandomTrips")]
+        public ActionResult<List<Trip>> GetRandomTrips() => Ok(_tripService.GetRandomTrips());
+
 
 
     }
